@@ -4,14 +4,26 @@ import axios from "axios";
 
 import '../css/Recommendations.css';
 
-
 export default function Recommendations(props) {
 
     let [recommendations, setNewRecommendations] = useState([]);
+    let refreshId;
 
     //czy jest tu niezbedny useEffect?
     useEffect(() => {
-        const refreshId = setInterval(() => {
+        getRecommendations();
+
+        refreshId = setInterval(() => {
+            getRecommendations();
+
+        }, 10000);
+
+        return () => {
+            clearInterval(refreshId);
+        }
+    }, []);
+
+    function getRecommendations() {
             if (props.currentUserProp) {
                 const axiosConfig = {
                     headers: {
@@ -26,13 +38,13 @@ export default function Recommendations(props) {
                     .catch(err => {
                             console.log(`Recommendations' query caused this error: ${err} `);
                             props.clearUserMethod();
-                            clearInterval(refreshId);
+                            //clearInterval(refreshId);
                         }
                     );
             }
 
-        }, 20000);
-    }, [recommendations]);
+        
+    }
     
     let recommendationsList = recommendations.map(recommendation => {
         return (
